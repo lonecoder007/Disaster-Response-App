@@ -57,6 +57,7 @@ def build_model():
     #tunned hyperparameters
     parameters ={'mult_clf__estimator__n_estimators':[50],
             'mult_clf__estimator__criterion':['gini'],
+             'mult_clf__estimator__max_depth':[15]  
                 }
     # model initialization
     model = GridSearchCV(pipeline,param_grid=parameters)
