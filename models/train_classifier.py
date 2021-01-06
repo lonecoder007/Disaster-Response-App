@@ -22,6 +22,16 @@ nltk.download('wordnet')
 
 # load data from database
 def load_data(database_filepath):
+    """
+    Load Data from the Database Function
+    
+    Arguments:
+        database_filepath -> Path to SQLite destination database (e.g. disaster_response_db.db)
+    Output:
+        X -> a dataframe containing features
+        Y -> a dataframe containing labels
+        category_names -> List of categories name
+    """
     engine = create_engine('sqlite:///'+database_filepath)
     df = pd.read_sql_table(database_filepath.replace('.db',''),engine)
     X = df['message']
@@ -32,6 +42,14 @@ def load_data(database_filepath):
 
 # tokenization function to process your text data
 def tokenize(text):
+    """
+    Tokenize the text function
+    
+    Arguments:
+        text -> Text message which needs to be tokenized
+    Output:
+        clean_tokens -> List of tokens extracted from the provided text
+    """
     # replace url from the data with 'urlplaceholder' 
     url_regex = 'http[s]?://(?:[a-zA-Z]|[0-9]|[$-_@.&+]|[!*\(\),]|(?:%[0-9a-fA-F][0-9a-fA-F]))+'
     detected_urls = re.findall(url_regex, text)
@@ -47,6 +65,13 @@ def tokenize(text):
 
 # Building a machine learning pipeline
 def build_model():
+    """
+    Build Pipeline function
+    
+    Output:
+        A Scikit ML Pipeline that process text messages and apply a classifier.
+        
+    """
     # classification model pipeline
     pipeline = Pipeline([
     ('vect',CountVectorizer(tokenizer=tokenize)),
@@ -67,6 +92,17 @@ def build_model():
 
 # model evalutation
 def evaluate_model(model, X_test, Y_test, category_names):
+     """
+    Evaluate Model function
+    
+    This function applies a ML pipeline to a test set and prints out the model performance (accuracy and f1score)
+    
+    Arguments:
+        pipeline -> A valid scikit ML Pipeline
+        X_test -> Test features
+        Y_test -> Test labels
+        category_names -> label names (multi-output)
+    """
     # model prediction on test data
     y_pred=model.predict(X_test)
     # model accuracy
@@ -76,11 +112,31 @@ def evaluate_model(model, X_test, Y_test, category_names):
 
 # Export model as a pickle file    
 def save_model(model, model_filepath):
+    """
+    Save Pipeline function
+    
+    This function saves trained model as Pickle file, to be loaded later.
+    
+    Arguments:
+        pipeline -> GridSearchCV or Scikit Pipelin object
+        pickle_filepath -> destination path to save .pkl file
+    
+    """
     with open(model_filepath, 'wb') as file:
         pickle.dump(model, file)  
 
 #driver function
 def main():
+    """
+    Train Classifier Main function
+    
+    This function applies the Machine Learning Pipeline:
+        1) Extract data from SQLite db
+        2) Train ML model on training set
+        3) Estimate model performance on test set
+        4) Save trained model as Pickle
+    
+    """
     if len(sys.argv) == 3:
         database_filepath, model_filepath = sys.argv[1:]
         print('Loading data...\n    DATABASE: {}'.format(database_filepath))
