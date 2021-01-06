@@ -6,6 +6,15 @@ from sqlalchemy import create_engine
 
 # load dataset
 def load_data(messages_filepath, categories_filepath):
+    """
+    Load Messages Data with Categories Function
+    
+    Arguments:
+        messages_filepath -> Path to the CSV file containing messages
+        categories_filepath -> Path to the CSV file containing categories
+    Output:
+        df -> Combined data containing messages and categories
+    """
     # load messages dataset
     messages = pd.read_csv(messages_filepath)
     # load categories dataset
@@ -16,6 +25,14 @@ def load_data(messages_filepath, categories_filepath):
 
 
 def clean_data(df):
+    """
+    Clean Categories Data Function
+    
+    Arguments:
+        df -> Combined data containing messages and categories
+    Outputs:
+        df -> Combined data containing messages and categories with categories cleaned up
+    """
     # create a dataframe of the 36 individual category columns
     categories = df['categories'].str.split(';',expand=True)
     # select the first row of the categories dataframe
@@ -48,12 +65,25 @@ def clean_data(df):
 
 #  Save the clean dataset into an sqlite database
 def save_data(df, database_filename):
+    """
+    Save Data to SQLite Database Function
+    
+    Arguments:
+        df -> Combined data containing messages and categories with categories cleaned up
+        database_filename -> Path to SQLite destination database
+    """
     engine = create_engine('sqlite:///'+ database_filename)
     table_name = database_filename.replace(".db","")
     df.to_sql(table_name, engine, index=False, if_exists='replace') 
 
 #driver function
 def main():
+    """
+    Main function which will kick off the data processing functions. There are three primary actions taken by this function:
+        1) Load Messages Data with Categories
+        2) Clean Categories Data
+        3) Save Data to SQLite Database
+    """
     if len(sys.argv) == 4:
 
         messages_filepath, categories_filepath, database_filepath = sys.argv[1:]
